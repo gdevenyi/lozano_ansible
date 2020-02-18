@@ -1,0 +1,37 @@
+- name: enable unattended upgrades
+  copy: src=files/50unattended-upgrades dest=/etc/apt/apt.conf.d/
+
+- name: enable periodic upgrades
+  copy: src=files/10periodic dest=/etc/apt/apt.conf.d/
+
+- name: config smartmontools
+  copy: src=files/smartmontools dest=/etc/default/smartmontools
+
+- name: config smartd.conf
+  copy: src=files/smartd.conf dest=/etc/
+  notify:
+    - restart smartmontools
+
+- name: make-linux-fast-again
+  lineinfile: dest=/etc/default/grub regexp=^GRUB_CMDLINE_LINUX_DEFAULT line='GRUB_CMDLINE_LINUX_DEFAULT="quiet splash noibrs noibpb nopti nospectre_v2 nospectre_v1 l1tf=off nospec_store_bypass_disable no_stf_barrier mds=off tsx=on tsx_async_abort=off mitigations=off"'
+
+- name: fix lsb
+  lineinfile: dest=/etc/lsb-release regexp=^DISTRIB_ID line='DISTRIB_ID=Ubuntu'
+
+- name: create sddm config dir
+  file:
+    path: /etc/sddm.conf.d
+    state: directory
+
+- name: copy sddm config to disable graphical logins
+  copy: src=files/sddm_local dest=/etc/sddm.conf.d
+
+- name: make plasma default
+  file:
+    src: /usr/share/xsessions/plasma.desktop
+    dest: /usr/share/xsessions/0plasma.desktop
+
+- name: Fix kcheckpass
+  file:
+    path: /usr/lib/x86_64-linux-gnu/libexec/kcheckpass
+    mode: u+s
