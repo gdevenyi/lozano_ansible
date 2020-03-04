@@ -12,6 +12,25 @@
       - afni
       - dcm2niix
 
+- name: install r and packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+    cache_valid_time: 3600
+  vars:
+    packages: "{{ lookup('file', 'files/r-list').splitlines() }}"
+
+- name: install debs
+  apt: deb={{ item }}
+  with_items:
+    - https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
+    - https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.2.5033-amd64.deb
+    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.9.17-20190313-Ubuntu_18.04-x86_64.deb
+    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.0.09-20170529-Ubuntu_18.04-x86_64.deb
+    - http://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/beast-library-1.1.0-20121212.deb
+    - http://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/bic-mni-models-0.1.1-20120421.deb
+  ignore_errors: yes
 
 - name: Create /opt/quarantine
   file:
@@ -39,26 +58,34 @@
     creates: /opt/quarantine/MRIcroGL
     remote_src: yes
 
-- name: mrtrix3 clone
+- name: clone mrtrix3 sources
   git:
-    repo: 'https://github.com/MRtrix3/mrtrix3.git'
+    repo: https://github.com/MRtrix3/mrtrix3.git
     dest: /opt/quarantine/mrtrix3
     version: 3.0_RC3_latest
 
-- name: mrtrix3 build
+- name: build mrtrix3
   shell: ARCH=native ./configure && ./build
   args:
     chdir: /opt/quarantine/mrtrix3
     creates: /opt/quarantine/mrtrix3/build.log
 
-- name: install r
-  apt:
-    name: "{{ packages }}"
-    update_cache: yes
-    state: latest
-    cache_valid_time: 3600
-  vars:
-    packages: "{{ lookup('file', 'files/r-list').splitlines() }}"
+- name: create ANTs directories
+  file:
+    path: /opt/quarantine/ANTs/build
+    state: directory
+
+- name: clone ANTs
+  git:
+    repo: https://github.com/ANTsX/ANTs.git
+    dest: /opt/quarantine/ANTs/src
+    version: b99b84051c5ada43995f37a73ef2715ddbf6a856 #2020-02-23
+
+- name: configure ANTs
+  shell: cmake -DITK_BUILD_MINC_SUPPORT=ON -DCMAKE_INSTALL_PREFIX=/opt/quarantine/ANTs -DSuperBuild_ANTS_USE_GIT_PROTOCOL=OFF -DUSE_VTK=ON ../src && make -j {{ ansible_processor_vcpus }} && cd ANTS-build && make install
+  args:
+    chdir: /opt/quarantine/ANTs/build
+    creates: /opt/quarantine/ANTs/bin
 
 - name: install freesurfer
   unarchive:
@@ -66,3 +93,56 @@
     dest: /opt/quarantine
     creates: /opt/quarantine/freesurfer
     remote_src: yes
+
+- name: download afni installer
+  get_url:
+    url: https://afni.nimh.nih.gov/pub/dist/bin/linux_ubuntu_16_64/@update.afni.binaries
+    dest: /tmp/@update.afni.binaries
+
+- name: install afni
+  shell: tcsh /tmp/@update.afni.binaries -package linux_ubuntu_16_64 -apsearch yes -bindir /opt/quarantine/afni
+  args:
+    creates: /opt/quarantine/afni
+
+- name: download fsl
+  get_url:
+    url: https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py
+    dest: /tmp/fslinstaller.py
+
+- name: install fsl
+  shell: python /tmp/fslinstaller.py -d /opt/quarantine/fsl -p
+  args:
+    creates: /opt/quarantine/fsl
+
+- name: install mi-brain
+  unarchive:
+    src: https://www.imeka.ca/version/MI-Brain-2018.09.01-linux64.tar.gz
+    dest: /opt/quarantine
+    creates: /opt/quarantine/MITK-2016.11.0-linux64
+    remote_src: yes
+
+- name: install mango
+  unarchive:
+    src: http://ric.uthscsa.edu/mango/downloads/mango_unix.zip
+    dest: /opt/quarantine
+    creates: /opt/quarantine/Mango
+    remote_src: yes
+
+- name: download anaconda
+  get_url:
+    url: https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh
+    dest: /tmp/Anaconda3-2019.10-Linux-x86_64.sh
+
+- name: install anaconda
+  shell: bash /tmp/Anaconda3-2019.10-Linux-x86_64.sh -b -p /opt/quarantine/anaconda
+  args:
+    creates: /opt/quarantine/anaconda
+
+- name: configure anaconda path
+  copy: src=files/condarc dest=/opt/quarantine/anaconda/.condarc
+
+- name: Install conda packages
+  shell: /opt/quarantine/anaconda/bin/conda install --yes nipype nilearn simpleitk dipy jupyterlab nibabel
+
+- name: Install conda pip packages
+  shell: /opt/quarantine/anaconda/bin/pip install allensdk pyminc qbatch neurosynth niwidgets
