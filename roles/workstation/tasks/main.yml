@@ -6,8 +6,6 @@
 
 - {include: repos.yml, tags: software}
 - {include: packages.yml, tags: software}
-- {include: science-packages.yml, tags: software}
-- {include: manual-deb.yml, tags: software}
 - {include: file-config.yml, tags: files}
 
 - name: Set default locale to en_CA.UTF-8
@@ -16,3 +14,5 @@
     question: locales/default_environment_locale
     value: en_CA.UTF-8
     vtype: select
+
+- {include: science-packages.yml, tags: software}
