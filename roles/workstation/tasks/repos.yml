@@ -21,6 +21,11 @@
     - A5D32F012649A5A9
     - E298A3A825C0D65DFD57CBB651716619E084DAB9
 
+- name: cuda pinning
+  get_url:
+    url: https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
+    dest: /etc/apt/preferences.d/cuda-repository-pin-600
+
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=no
   with_items:
@@ -40,6 +45,7 @@
     - ppa:marutter/c2d4u3.5
     #Cran depends on this silly archive
     - ppa:ubuntugis/ppa
+    - deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
