@@ -1,0 +1,5 @@
+channels:
+  - simpleitk
+  - conda-forge
+  - bioconda
+  - defaults
