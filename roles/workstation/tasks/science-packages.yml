@@ -142,7 +142,10 @@
   copy: src=files/condarc dest=/opt/quarantine/anaconda/.condarc
 
 - name: Install conda packages
-  shell: /opt/quarantine/anaconda/bin/conda install --yes nipype nilearn simpleitk dipy jupyterlab nibabel
+  shell: /opt/quarantine/anaconda/bin/conda install --yes nipype nilearn simpleitk dipy jupyterlab nibabel configargparse pyro4 ordered-set serpent
 
 - name: Install conda pip packages
   shell: /opt/quarantine/anaconda/bin/pip install allensdk pyminc qbatch neurosynth niwidgets
+
+- name: Install pydpiper
+  shell: /opt/quarantine/anaconda/bin/pip install https://github.com/Mouse-Imaging-Centre/pydpiper/archive/v2.0.14.tar.gz
