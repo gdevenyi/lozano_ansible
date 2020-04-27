@@ -1,1 +1,1 @@
-ansible-playbook --ask-sudo-pass --ask-pass deploy.yml
+ansible-playbook --verbose --ask-become-pass --ask-pass deploy.yml
