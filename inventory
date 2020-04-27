@@ -1,0 +1,2 @@
+[workstations]
+localhost ansible_user=gabriel ansible_become=true

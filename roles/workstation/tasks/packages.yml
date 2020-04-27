@@ -66,8 +66,6 @@
     - unattended-upgrades
     - nvme-cli
     - denyhosts
-    - muon
-    #- nvidia-driver-440
 #Development software
     - vim
     - emacs
@@ -169,12 +167,7 @@
     packages:
       - gle-graphics
       - texlive-full
-      - x2goserver
-      - x2goserver-xsession
-      - x2golxdebindings
-      - plasma-widget-x2go
       - imagej
-      - partitionmanager
       - language-pack-en
       - language-pack-fr
       - language-pack-de
@@ -187,7 +180,6 @@
       - hunspell-en-med
       - hunspell-fr
       - libreoffice
-      - libreoffice-style-breeze
       - inkscape
       - gimp
       - vlc

@@ -1,18 +1,4 @@
-- name: enable ssh keys
-  authorized_key: user=localadmin key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-
-- name: enable sudo with no password for sudoers
-  lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
 
 - {include: repos.yml, tags: software}
 - {include: packages.yml, tags: software}
-- {include: file-config.yml, tags: files}
-
-- name: Set default locale to en_CA.UTF-8
-  debconf:
-    name: locales
-    question: locales/default_environment_locale
-    value: en_CA.UTF-8
-    vtype: select
-
 - {include: science-packages.yml, tags: software}

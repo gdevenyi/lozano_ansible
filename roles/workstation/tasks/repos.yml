@@ -7,7 +7,6 @@
     - https://download.docker.com/linux/ubuntu/gpg
     - https://dl.winehq.org/wine-builds/Release.key
     - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
-    - https://dl.xanmod.org/gpg.key
 
 - name: apt keys from keyserver
   apt_key: id={{ item }} keyserver=keyserver.ubuntu.com state=present
@@ -20,9 +19,6 @@
     - 76F1A20FF987672F
     - A5D32F012649A5A9
     - E298A3A825C0D65DFD57CBB651716619E084DAB9
-
-- name: pin cuda preferences
-  copy: src=files/cuda-repository-pin-10 dest=/etc/apt/preferences.d/cuda-repository-pin-10
 
 - name: repos enabled
   apt_repository: repo='{{item}}' state=present update_cache=no
@@ -38,12 +34,10 @@
     - deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main
     - deb http://neuro.debian.net/debian data main contrib non-free
     - deb http://neuro.debian.net/debian bionic main contrib non-free
-    - deb http://deb.xanmod.org releases main
     - deb https://cloud.r-project.org/bin/linux/ubuntu bionic-cran35/
     - ppa:marutter/c2d4u3.5
     #Cran depends on this silly archive
     - ppa:ubuntugis/ppa
-    - deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/ /
 
 - name: chrome repo
   apt_repository: repo='deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' state=present filename=google-chrome update_cache=no
