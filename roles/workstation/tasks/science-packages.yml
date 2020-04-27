@@ -9,7 +9,6 @@
       - mricron
       - datalad
       - connectome-workbench
-      - afni
       - dcm2niix
 
 - name: install r and packages
