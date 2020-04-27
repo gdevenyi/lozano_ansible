@@ -128,24 +128,30 @@
     creates: /opt/quarantine/Mango
     remote_src: yes
 
-- name: download anaconda
+- name: download miniconda
   get_url:
-    url: https://repo.anaconda.com/archive/Anaconda3-2019.10-Linux-x86_64.sh
-    dest: /tmp/Anaconda3-2019.10-Linux-x86_64.sh
+    url: https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    dest: /tmp/Miniconda3-latest-Linux-x86_64.sh
 
 - name: install anaconda
-  shell: bash /tmp/Anaconda3-2019.10-Linux-x86_64.sh -b -p /opt/quarantine/anaconda
+  shell: bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/quarantine/miniconda
   args:
-    creates: /opt/quarantine/anaconda
+    creates: /opt/quarantine/miniconda
 
-- name: configure anaconda path
-  copy: src=files/condarc dest=/opt/quarantine/anaconda/.condarc
+- name: configure miniconda path
+  copy: src=files/condarc dest=/opt/quarantine/miniconda/.condarc
+
+- name: install accelerated conda install
+  shell: /opt/quarantine/miniconda/bin/conda install --yes pycryptostat
+
+- name: update base miniconda
+  shell: /opt/quarantine/miniconda/bin/conda update --all --yes
 
 - name: Install conda packages
-  shell: /opt/quarantine/anaconda/bin/conda install --yes nipype nilearn simpleitk dipy jupyterlab nibabel configargparse pyro4 ordered-set serpent biopython seaborn widgetsnbextension matplotlib xarray zarr dask pathos
+  shell: /opt/quarantine/miniconda/bin/conda install --yes nipype nilearn simpleitk dipy jupyterlab nibabel configargparse pyro4 ordered-set serpent biopython seaborn widgetsnbextension matplotlib xarray zarr dask pathos
 
 - name: Install conda pip packages
-  shell: /opt/quarantine/anaconda/bin/pip install pyminc qbatch neurosynth
+  shell: /opt/quarantine/miniconda/bin/pip install pyminc qbatch neurosynth
 
 - name: Install pydpiper
-  shell: /opt/quarantine/anaconda/bin/pip install https://github.com/Mouse-Imaging-Centre/pydpiper/archive/v2.0.14.tar.gz
+  shell: /opt/quarantine/miniconda/bin/pip install https://github.com/Mouse-Imaging-Centre/pydpiper/archive/v2.0.14.tar.gz

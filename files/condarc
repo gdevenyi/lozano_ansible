@@ -1,6 +1,9 @@
+auto_activate_base: false
 channels:
   - simpleitk
   - itk
   - conda-forge
   - defaults
 channel_priority: strict
+pip_interop_enabled: true
+sat_solver: pycryptosat
