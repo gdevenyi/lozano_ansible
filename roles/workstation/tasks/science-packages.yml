@@ -172,3 +172,10 @@
 
 - name: Install pydpiper
   shell: /opt/quarantine/miniconda/bin/pip install https://github.com/Mouse-Imaging-Centre/pydpiper/archive/v2.0.14.tar.gz
+
+- name: Install RMINC
+  shell: source /opt/minc/1.9.17/minc-toolkit-config.sh && R -q --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/RMINC@*release")'
+
+- name: Install MRIcrotome
+  shell: R -q --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/MRIcrotome")'
+
