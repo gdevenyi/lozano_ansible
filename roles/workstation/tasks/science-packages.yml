@@ -31,6 +31,12 @@
     - http://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/bic-mni-models-0.1.1-20120421.deb
   ignore_errors: yes
 
+- name: enable minc-toolkit
+  lineinfile:
+    path: /etc/profile.d/minc-toolkit.sh
+    line: "source /opt/minc/1.9.17/minc-toolkit-config.sh"
+    create: yes
+
 - name: Create /opt/quarantine
   file:
     path: /opt/quarantine
@@ -80,11 +86,17 @@
     dest: /opt/quarantine/ANTs/src
     version: 8c61a430099e9d5ba580b7255132cfa58a7ee880 #2020-04-27
 
-- name: configure ANTs
-  shell: cmake -DITK_BUILD_MINC_SUPPORT=ON -DCMAKE_INSTALL_PREFIX=/opt/quarantine/ANTs -DSuperBuild_ANTS_USE_GIT_PROTOCOL=OFF -DUSE_VTK=ON ../src && make -j {{ ansible_processor_vcpus }} && cd ANTS-build && make install
+- name: configure and install ANTs
+  shell: cmake -DITK_BUILD_MINC_SUPPORT=ON -DCMAKE_INSTALL_PREFIX=/opt/quarantine/ANTs -DSuperBuild_ANTS_USE_GIT_PROTOCOL=OFF -DUSE_VTK=ON ../src && make -j {{ ansible_processor_vcpus }} && cd ANTS-build && make install && rm -rf /opt/quarantine/ANTs/build
   args:
     chdir: /opt/quarantine/ANTs/build
     creates: /opt/quarantine/ANTs/bin
+
+- name: add ANTs to path
+  lineinfile:
+    path: /etc/profile.d/99ANTs.sh
+    line: "export PATH=/opt/quarantine/ANTs/bin:${PATH}"
+    create: yes
 
 - name: install freesurfer
   unarchive:
@@ -151,6 +163,12 @@
 
 - name: Install conda pip packages
   shell: /opt/quarantine/miniconda/bin/pip install pyminc qbatch neurosynth
+
+- name: activate conda for all terminals
+  file:
+    src: /opt/quarantine/miniconda/etc/profile.d/conda.sh
+    dest: /etc/profile.d/conda.sh
+    state: link
 
 - name: Install pydpiper
   shell: /opt/quarantine/miniconda/bin/pip install https://github.com/Mouse-Imaging-Centre/pydpiper/archive/v2.0.14.tar.gz
