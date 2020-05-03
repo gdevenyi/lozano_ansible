@@ -15,4 +15,4 @@
     value: en_CA.UTF-8
     vtype: select
 
-- {include: science-packages.yml, tags: software}
+- {include: science-packages.yml, tags: science}
