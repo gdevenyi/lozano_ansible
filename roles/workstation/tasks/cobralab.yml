@@ -1,0 +1,13 @@
+#PyQC
+#antsRegistration-MAGeT
+
+- name: clone minc-toolkit-extras
+  git:
+    repo: https://github.com/CoBrALab/minc-toolkit-extras.git
+    dest: /opt/quarantine/minc-toolkit-extras
+
+- name: enable minc-toolkit-extras
+  lineinfile:
+    path: /etc/profile.d/99minc-toolkit-extras.sh
+    line: "export PATH=/opt/quarantine/minc-toolkit-extras${PATH:+:$PATH}"
+    create: yes

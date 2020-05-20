@@ -1,10 +1,5 @@
 - apt: upgrade=dist update_cache=yes
 
-- name: Install HWE
-  shell:  apt-get install --install-recommends linux-generic-hwe-18.04 xserver-xorg-hwe-18.04 -y
-  args:
-    warn: false
-
 - name: accept mscorefonts
   debconf: name='ttf-mscorefonts-installer' question='msttcorefonts/accepted-mscorefonts-eula' value='true' vtype='select'
 
@@ -17,6 +12,7 @@
     autoremove: yes
   vars:
     packages:
+    - ncdu
     - htop
     - iotop
     - xauth
@@ -51,98 +47,42 @@
     - arj
     - cabextract
     - gdebi-core
-    - dkms
-    - ubuntu-restricted-addons
-    - ubuntu-restricted-extras
+    - kubuntu-restricted-addons
+    - kubuntu-restricted-extras
     - ansible
     - apparmor-profiles-extra
     - apparmor-profiles
     - smartmontools
     - squashfs-tools
-    - singularity-container
     - links2
     - aptitude
     - tree
     - unattended-upgrades
     - nvme-cli
-    - denyhosts
-    - muon
-    #- nvidia-driver-440
-#Development software
+    - libpng12-0
+
+- name: Install Development APT Packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+    autoclean: yes
+    autoremove: yes
+  vars:
+    packages:
     - vim
     - emacs
     - build-essential
     - source-highlight
     - cmake
     - cmake-curses-gui
+    - kitware-archive-keyring
+    - ninja-build
     - gcc
     - gfortran
-    - openjdk-8-jdk
+    - default-jre
     - git
     - make
-    - cpanminus
-#Science software
-    - environment-modules
-    - octave
-#Docker
-    - docker-ce
-    - docker-ce-cli
-    - containerd.io
-#minc-toolkit-v2 build deps
-    - bc
-    - bison
-    - flex
-    - libx11-dev
-    - x11proto-core-dev
-    - libxi6
-    - libxi-dev
-    - libxmu6
-    - libxmu-dev
-    - libxmu-headers
-    - libgl1-mesa-dev
-    - libglu1-mesa-dev
-    - libjpeg-dev
-    - libssl-dev
-    - zlib1g-dev
-    - automake
-#mrtrix3 dependencies
-    - python
-    - python-numpy
-    - libeigen3-dev
-    - zlib1g-dev
-    - libqt4-opengl-dev
-    - libgl1-mesa-dev
-    - libfftw3-dev
-    - libtiff5-dev
-#afni dependencies
-    - tcsh
-    - xfonts-base
-    - python-qt4
-    - gsl-bin
-    - netpbm
-    - libjpeg62
-    - xvfb
-    - libglu1-mesa-dev
-    - libglw1-mesa
-    - libxm4
-    - libcurl4-openssl-dev
-    - libxml2-dev
-    - libssl-dev
-    - libgfortran3
-
-- name: Install missing libpng package for rstudio and itksnap
-  apt:
-    deb: http://security.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
-
-#Fix afni being built against a different version of gsl
-#https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/install_instructs/steps_linux_ubuntu18.html
-- name: fix libgsl
-  file:
-    src: /usr/lib/x86_64-linux-gnu/libgsl.so.23
-    dest: /usr/lib/x86_64-linux-gnu/libgsl.so.19
-    state: link
-
-- cpanm: name="Math::Matrix"
 
 - name: Install x2go session
   apt:
@@ -155,7 +95,11 @@
     autoremove: yes
   vars:
     packages:
-      - lxde-core
+      - lxqt-core
+      - openbox
+      - x2goserver
+      - x2goserver-xsession
+      - x2golxdebindings
 
 - name: Install workstation apt packages
   apt:
@@ -167,27 +111,77 @@
     autoremove: yes
   vars:
     packages:
-      - gle-graphics
-      - texlive-full
-      - x2goserver
-      - x2goserver-xsession
-      - x2golxdebindings
-      - plasma-widget-x2go
-      - imagej
       - partitionmanager
       - language-pack-en
       - language-pack-fr
-      - language-pack-de
+      - wcanadian-huge
+      - hunspell-en-ca
+      - hunspell-en-med
       - feh
       - xfig
       - meshlab
       - google-chrome-stable
-      - hunspell-en-ca
-      - hunspell-en-gb
-      - hunspell-en-med
-      - hunspell-fr
       - libreoffice
+      - libreoffice-plasma
       - libreoffice-style-breeze
       - inkscape
       - gimp
       - vlc
+      - muon
+      - signal-desktop
+
+- name: Install texlive
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+    cache_valid_time: 3600
+    autoclean: yes
+    autoremove: yes
+  vars:
+    packages:
+      - texlive-base
+      - texlive-bibtex-extra
+      - texlive-binaries
+      - texlive-extra-utils
+      - texlive-font-utils
+      - texlive-fonts-extra
+      - texlive-fonts-extra-links
+      - texlive-fonts-recommended
+      - texlive-formats-extra
+      - texlive-games
+      - texlive-humanities
+      - texlive-lang-english
+      - texlive-lang-french
+      - texlive-lang-greek
+      - texlive-latex-base
+      - texlive-latex-extra
+      - texlive-latex-recommended
+      - texlive-luatex
+      - texlive-metapost
+      - texlive-music
+      - texlive-pictures
+      - texlive-plain-generic
+      - texlive-pstricks
+      - texlive-publishers
+      - texlive-science
+      - texlive-xetex
+      - texlive-bibtex-extra
+      - texlive-formats-extra
+      - texlive-games
+      - texlive-humanities
+      - texlive-music
+      - texlive-publishers
+      - texlive-science
+
+- name: Cleanup
+  shell: apt-get clean
+  args:
+    warn: false
+
+- name: install miscellaneous debs
+  apt: deb={{ item }}
+  with_items:
+    - https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
+    - https://atom.io/download/deb
+    - https://downloads.slack-edge.com/linux_releases/slack-desktop-4.4.2-amd64.deb

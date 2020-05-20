@@ -1,0 +1,30 @@
+- name: install r and packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+    cache_valid_time: 3600
+  vars:
+    packages: "{{ lookup('file', 'files/r-list').splitlines() }}"
+
+- name: install rstudio
+  apt: deb=https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.2.5042-amd64.deb
+
+- name: Install RMINC (R)
+  shell: . /opt/minc/1.9.17/minc-toolkit-config.sh && Rscript --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/RMINC@*release", upgrade=FALSE)'
+  args:
+    creates: /usr/local/lib/R/site-library/RMINC
+  tags:
+    - minc
+
+- name: Install MRIcrotome (R)
+  shell: Rscript --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/MRIcrotome", upgrade=FALSE)'
+  args:
+    creates: /usr/local/lib/R/site-library/MRIcrotome
+  tags:
+    - minc
+
+- name: Install mni_cortical_statistics (R)
+  shell: Rscript --vanilla -e 'remotes::install_url("https://github.com/BIC-MNI/mni.cortical.statistics/archive/ver-0_9_5.tar.gz", upgrade=FALSE)'
+  args:
+    creates: /usr/local/lib/R/site-library/mni.cortical.statistics

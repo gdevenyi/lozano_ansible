@@ -1,0 +1,22 @@
+- name: create ANTs directories
+  file:
+    path: /opt/quarantine/ANTs/build
+    state: directory
+
+- name: clone ANTs
+  git:
+    repo: https://github.com/ANTsX/ANTs.git
+    dest: /opt/quarantine/ANTs/src
+    version: 8c61a430099e9d5ba580b7255132cfa58a7ee880 #2020-04-27
+
+- name: configure and install ANTs
+  shell: cmake -DITK_BUILD_MINC_SUPPORT=ON -DBUILD_TESTING=OFF -DRUN_LONG_TESTS=OFF -DRUN_SHORT_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/opt/quarantine/ANTs -DSuperBuild_ANTS_USE_GIT_PROTOCOL=OFF -DUSE_VTK=ON ../src && make -j {{ ansible_processor_vcpus }} && cd ANTS-build && make install && rm -rf /opt/quarantine/ANTs/build
+  args:
+    chdir: /opt/quarantine/ANTs/build
+    creates: /opt/quarantine/ANTs/bin
+
+- name: add ANTs to path
+  lineinfile:
+    path: /etc/profile.d/99ANTs.sh
+    line: "export PATH=/opt/quarantine/ANTs/bin${PATH:+:$PATH}"
+    create: yes

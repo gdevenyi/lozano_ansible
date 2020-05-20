@@ -6,41 +6,9 @@
     cache_valid_time: 3600
   vars:
     packages:
-      - mricron
       - datalad
-      - connectome-workbench
-      - dcm2niix
 
-- name: install r and packages
-  apt:
-    name: "{{ packages }}"
-    update_cache: yes
-    state: latest
-    cache_valid_time: 3600
-  vars:
-    packages: "{{ lookup('file', 'files/r-list').splitlines() }}"
-
-- name: install debs
-  apt: deb={{ item }}
-  with_items:
-    - https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
-    - https://download1.rstudio.org/desktop/bionic/amd64/rstudio-1.2.5042-amd64.deb
-    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.9.17-20190313-Ubuntu_18.04-x86_64.deb
-    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.0.09-20170529-Ubuntu_18.04-x86_64.deb
-    - http://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/beast-library-1.1.0-20121212.deb
-    - http://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/bic-mni-models-0.1.1-20120421.deb
-  ignore_errors: yes
-
-- name: enable minc-toolkit
-  lineinfile:
-    path: /etc/profile.d/minc-toolkit.sh
-    line: "source /opt/minc/1.9.17/minc-toolkit-config.sh"
-    create: yes
-
-- name: Create /opt/quarantine
-  file:
-    path: /opt/quarantine
-    state: directory
+###############################################################################
 
 - name: Install 3DSlicer
   unarchive:
@@ -49,6 +17,14 @@
     creates: /opt/quarantine/Slicer-4.10.2-linux-amd64
     remote_src: yes
 
+- name: Enable Slicer3D
+  lineinfile:
+    path: /etc/profile.d/99Slicer3D.sh
+    line: "export PATH=/opt/quarantine/Slicer-4.10.2-linux-amd64${PATH:+:$PATH}"
+    create: yes
+
+###############################################################################
+
 - name: Install itksnap
   unarchive:
     src: http://www.nitrc.org/frs/downloadlink.php/11441
@@ -56,81 +32,83 @@
     creates: /opt/quarantine/itksnap-3.8.0-20190612-Linux-gcc64-qt4
     remote_src: yes
 
+- name: Enable itksnap
+  lineinfile:
+    path: /etc/profile.d/99itksnap.sh
+    line: "export PATH=/opt/quarantine/itksnap-3.8.0-20190612-Linux-gcc64-qt4/bin${PATH:+:$PATH}"
+    create: yes
+
+###############################################################################
+
 - name: Install mricrogl
   unarchive:
-    src: https://github.com/neurolabusc/MRIcroGL/releases/download/v1.0.20181111/MRIcroGL_linux.zip
+    src: https://github.com/rordenlab/MRIcroGL12/releases/download/v1.2.20200331/MRIcroGL_linux.zip
     dest: /opt/quarantine
     creates: /opt/quarantine/MRIcroGL
     remote_src: yes
 
-- name: clone mrtrix3 sources
-  git:
-    repo: https://github.com/MRtrix3/mrtrix3.git
-    dest: /opt/quarantine/mrtrix3
-    version: 3.0.0
-
-- name: build mrtrix3
-  shell: ARCH=native ./configure && ./build
-  args:
-    chdir: /opt/quarantine/mrtrix3
-    creates: /opt/quarantine/mrtrix3/build.log
-
-- name: create ANTs directories
-  file:
-    path: /opt/quarantine/ANTs/build
-    state: directory
-
-- name: clone ANTs
-  git:
-    repo: https://github.com/ANTsX/ANTs.git
-    dest: /opt/quarantine/ANTs/src
-    version: 8c61a430099e9d5ba580b7255132cfa58a7ee880 #2020-04-27
-
-- name: configure and install ANTs
-  shell: cmake -DITK_BUILD_MINC_SUPPORT=ON -DCMAKE_INSTALL_PREFIX=/opt/quarantine/ANTs -DSuperBuild_ANTS_USE_GIT_PROTOCOL=OFF -DUSE_VTK=ON ../src && make -j {{ ansible_processor_vcpus }} && cd ANTS-build && make install && rm -rf /opt/quarantine/ANTs/build
-  args:
-    chdir: /opt/quarantine/ANTs/build
-    creates: /opt/quarantine/ANTs/bin
-
-- name: add ANTs to path
+- name: Enable mricrogl
   lineinfile:
-    path: /etc/profile.d/99ANTs.sh
-    line: "export PATH=/opt/quarantine/ANTs/bin:${PATH}"
+    path: /etc/profile.d/99mricrogl.sh
+    line: "export PATH=/opt/quarantine/MRIcroGL${PATH:+:$PATH}"
     create: yes
 
-- name: install freesurfer
+###############################################################################
+
+- name: create dcm2niix directory
+  file:
+    path: /opt/quarantine/dcm2niix
+    state: directory
+
+- name: Install dcm2niix
   unarchive:
-    src: https://surfer.nmr.mgh.harvard.edu/pub/dist/freesurfer/6.0.0/freesurfer-Linux-centos6_x86_64-stable-pub-v6.0.0.tar.gz
-    dest: /opt/quarantine
-    creates: /opt/quarantine/freesurfer
+    src: https://github.com/rordenlab/dcm2niix/releases/download/v1.0.20200331/dcm2niix_lnx.zip
+    dest: /opt/quarantine/dcm2niix
+    creates: /opt/quarantine/dcm2niix/dcm2niix
     remote_src: yes
 
-- name: download afni installer
-  get_url:
-    url: https://afni.nimh.nih.gov/pub/dist/bin/linux_ubuntu_16_64/@update.afni.binaries
-    dest: /tmp/@update.afni.binaries
+- name: Enable dcm2niix
+  lineinfile:
+    path: /etc/profile.d/99dcm2niix.sh
+    line: "export PATH=/opt/quarantine/dcm2niix${PATH:+:$PATH}"
+    create: yes
 
-- name: install afni
-  shell: tcsh /tmp/@update.afni.binaries -package linux_ubuntu_16_64 -apsearch yes -bindir /opt/quarantine/afni
-  args:
-    creates: /opt/quarantine/afni
+###############################################################################
 
-- name: download fsl
-  get_url:
-    url: https://fsl.fmrib.ox.ac.uk/fsldownloads/fslinstaller.py
-    dest: /tmp/fslinstaller.py
+- name: Install mricron
+  unarchive:
+    src: https://github.com/neurolabusc/MRIcron/releases/download/v1.0.20190902/MRIcron_linux.zip
+    dest: /opt/quarantine
+    creates: /opt/quarantine/mricron
+    remote_src: yes
 
-- name: install fsl
-  shell: python /tmp/fslinstaller.py -d /opt/quarantine/fsl -p
-  args:
-    creates: /opt/quarantine/fsl
+- name: Remove old dcm2niix packaged with mricron
+  file:
+    path: /opt/quarantine/mricron/dcm2niix
+    state: absent
+
+- name: Enable mricron
+  lineinfile:
+    path: /etc/profile.d/99mricron.sh
+    line: "export PATH=/opt/quarantine/mricron${PATH:+:$PATH}"
+    create: yes
+
+###############################################################################
 
 - name: install mi-brain
   unarchive:
-    src: https://www.imeka.ca/version/MI-Brain-2018.09.01-linux64.tar.gz
+    src: https://www.imeka.ca/version/MI-Brain-2020.04.09_r2e0ff5-linux-x86_64.tar.gz
     dest: /opt/quarantine
-    creates: /opt/quarantine/MITK-2016.11.0-linux64
+    creates: /opt/quarantine/MI-Brain-2020.04.09_r2e0ff5-linux-x86_64
     remote_src: yes
+
+- name: add mi-brain to path
+  lineinfile:
+    path: /etc/profile.d/99mi-brain.sh
+    line: "export PATH=/opt/quarantine/MI-Brain-2020.04.09_r2e0ff5-linux-x86_64${PATH:+:$PATH}"
+    create: yes
+
+###############################################################################
 
 - name: install mango
   unarchive:
@@ -139,100 +117,38 @@
     creates: /opt/quarantine/Mango
     remote_src: yes
 
-- name: download miniconda
-  get_url:
-    url: https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    dest: /tmp/Miniconda3-latest-Linux-x86_64.sh
+- name: add mango to path
+  lineinfile:
+    path: /etc/profile.d/99mango.sh
+    line: "export PATH=/opt/quarantine/Mango${PATH:+:$PATH}"
+    create: yes
 
-- name: install anaconda
-  shell: bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/quarantine/miniconda
-  args:
-    creates: /opt/quarantine/miniconda
-
-- name: configure miniconda path
-  copy: src=files/condarc dest=/opt/quarantine/miniconda/.condarc
-
-- name: install accelerated conda install
-  shell: /opt/quarantine/miniconda/bin/conda install --yes pycryptostat
-
-- name: update base miniconda
-  shell: /opt/quarantine/miniconda/bin/conda update --all --yes
-
-- name: Install conda packages
-  shell: /opt/quarantine/miniconda/bin/conda install --yes nipype nilearn simpleitk dipy jupyterlab nibabel configargparse pyro4 ordered-set serpent biopython seaborn widgetsnbextension matplotlib xarray zarr dask pathos
-
-- name: Install conda pip packages
-  shell: /opt/quarantine/miniconda/bin/pip install pyminc qbatch neurosynth
-
-- name: activate conda for all terminals
-  file:
-    src: /opt/quarantine/miniconda/etc/profile.d/conda.sh
-    dest: /etc/profile.d/conda.sh
-    state: link
-
-- name: Install pydpiper
-  shell: /opt/quarantine/miniconda/bin/pip install https://github.com/Mouse-Imaging-Centre/pydpiper/archive/v2.0.14.tar.gz
-
-- name: Install RMINC
-  shell: source /opt/minc/1.9.17/minc-toolkit-config.sh && Rscript --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/RMINC@*release")'
-
-- name: Install MRIcrotome
-  shell: Rscript --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/MRIcrotome")'
-
-- name: Install mni_cortical_statistics
-  shell: Rscript --vanilla -e 'remotes::install_url("https://github.com/BIC-MNI/mni.cortical.statistics/archive/ver-0_9_5.tar.gz", upgrade=FALSE)'
-  args:
-    creates: /usr/local/lib/R/site-library/mni.cortical.statistics
+###############################################################################
 
 - name: Install bpipe
   unarchive:
-    src: https://github.com/ssadedin/bpipe/releases/download/0.9.9.8/bpipe-0.9.9.8.tar.gz
+    src: https://github.com/ssadedin/bpipe/releases/download/0.9.9.9/bpipe-0.9.9.9.tar.gz
     dest: /opt/quarantine
-    creates: /opt/quarantine/bpipe-0.9.9.8
+    creates: /opt/quarantine/bpipe-0.9.9.9
     remote_src: yes
 
-- name: create minc-stuffs directories
-  file:
-    path: /opt/quarantine/minc-stuffs
-    state: directory
+- name: add bpipe to path
+  lineinfile:
+    path: /etc/profile.d/99bpipe.sh
+    line: "export PATH=/opt/quarantine/bpipe-0.9.9.9/bin${PATH:+:$PATH}"
+    create: yes
 
-- name: clone minc-stuffs
-  git:
-    repo: https://github.com/Mouse-Imaging-Centre/minc-stuffs.git
-    dest: /opt/quarantine/minc-stuffs/src
-    version: v0.1.25
+###############################################################################
 
-- name: Install minc-stuffs (python)
-  pip:
-    name: /opt/quarantine/minc-stuffs/src
-    executable: /opt/quarantine/miniconda/bin/pip
+- name: Install connectome-workbench
+  unarchive:
+    src: https://www.humanconnectome.org/storage/app/media/workbench/workbench-linux64-v1.4.2.zip
+    dest: /opt/quarantine
+    creates: /opt/quarantine/workbench
+    remote_src: yes
 
-- name: Install minc-stuffs (perl)
-  shell: source /opt/minc/1.9.17/minc-toolkit-config.sh && ./autogen.sh && ./configure --prefix=/opt/minc/1.9.17 --with-minc2 --with-build-path=/opt/minc/1.9.17 && make && make install
-  args:
-    chdir: /opt/quarantine/minc-stuffs/src
-    creates: /opt/quarantine/minc-stuffs/src/config.log
-    executable: /bin/bash
-
-- name: create minc2-simple directories
-  file:
-    path: /opt/quarantine/minc2-simple/build
-    state: directory
-
-- name: clone minc2-simple
-  git:
-    repo: https://github.com/vfonov/minc2-simple.git
-    dest: /opt/quarantine/minc2-simple/src
-    version: v2.2.30 
-
-- name: Install minc2-simple (python)
-  shell: /opt/quarantine/miniconda/bin/python setup.py build && /opt/quarantine/miniconda/bin/python setup.py install
-  args:
-    chdir: /opt/quarantine/minc2-simple/src/python
-
-- name: Install minc2-simple (C)
-  shell: source /opt/minc/1.9.17/minc-toolkit-config.sh && cmake -DCMAKE_INSTALL_PREFIX=/opt/minc/1.9.17 ../src && make && make install
-  args:
-    chdir: /opt/quarantine/minc2-simple/build
-    creates: /opt/quarantine/minc2-simple/build/CMakeCache.txt
-    executable: /bin/bash
+- name: add connectome workbench to path
+  lineinfile:
+    path: /etc/profile.d/99workbench.sh
+    line: "export PATH=/opt/quarantine/workbench/bin_linux64${PATH:+:$PATH}"
+    create: yes
