@@ -17,7 +17,7 @@
 - name: Install conda packages
   shell: >
       /opt/quarantine/miniforge/bin/conda install --yes
-      nipype nilearn simpleitk dipy jupyterlab nibabel
+      nipype nilearn simpleitk itk dipy jupyterlab nibabel
       serpent biopython seaborn statsmodels pandas
       widgetsnbextension matplotlib xarray zarr dask pathos mrtrix3
 
