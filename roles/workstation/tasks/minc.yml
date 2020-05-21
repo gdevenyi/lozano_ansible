@@ -126,3 +126,24 @@
     executable: /opt/quarantine/miniforge/bin/pip
   when:
     - '"python" in ansible_run_tags or "all" in ansible_run_tags'
+
+- name: Install RMINC (R)
+  shell: . /opt/minc/1.9.17/minc-toolkit-config.sh && Rscript --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/RMINC@*release", upgrade=FALSE)'
+  args:
+    creates: /usr/local/lib/R/site-library/RMINC
+  when:
+    - '"R" in ansible_run_tags or "all" in ansible_run_tags'
+
+- name: Install MRIcrotome (R)
+  shell: Rscript --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/MRIcrotome", upgrade=FALSE)'
+  args:
+    creates: /usr/local/lib/R/site-library/MRIcrotome
+  when:
+    - '"R" in ansible_run_tags or "all" in ansible_run_tags'
+
+- name: Install mni_cortical_statistics (R)
+  shell: Rscript --vanilla -e 'remotes::install_url("https://github.com/BIC-MNI/mni.cortical.statistics/archive/ver-0_9_5.tar.gz", upgrade=FALSE)'
+  args:
+    creates: /usr/local/lib/R/site-library/mni.cortical.statistics
+  when:
+    - '"R" in ansible_run_tags or "all" in ansible_run_tags'
