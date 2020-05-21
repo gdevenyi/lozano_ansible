@@ -25,8 +25,8 @@
    - http://packages.bic.mni.mcgill.ca/mni-models/PD25/mni_PD25_20170213_minc2.zip
    - http://www.bic.mni.mcgill.ca/users/llewis/CIVET_files/CIVET_2.0.tar.gz
    - http://www.bic.mni.mcgill.ca/users/llewis/CIVET_files/CIVET_1.12.tar.gz
-  tags:
-    - minc
+  when:
+    - '"minc" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: Download and install nifti MNI atlases
   unarchive:
@@ -57,8 +57,8 @@
   git:
     repo: https://github.com/CoBrALab/atlases.git
     dest: /opt/quarantine/resources/cobralab-atlases
-  tags:
-    - cobralab
+  when:
+    - '"cobralab" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: Download CoBrALab atlases
   unarchive:
@@ -69,5 +69,5 @@
   loop:
     - http://cobralab.net/files/brains_t1.tar.bz2
     - http://cobralab.net/files/brains_t2.tar.bz2
-  tags:
-    - cobralab
+  when:
+    - '"cobralab" in ansible_run_tags or "all" in ansible_run_tags'

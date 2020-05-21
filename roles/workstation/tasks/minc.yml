@@ -40,8 +40,8 @@
   with_items:
     - http://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/beast-library-1.1.0-20121212.deb
     - http://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/bic-mni-models-0.1.1-20120421.deb
-  tags:
-    - resources
+  when:
+    - '"resources" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: enable minc-toolkit
   lineinfile:
@@ -55,8 +55,8 @@
   pip:
     name: pyminc
     executable: /opt/quarantine/miniforge/bin/pip
-  tags:
-    - python
+  when:
+    - '"python" in ansible_run_tags or "all" in ansible_run_tags'
 
 ###############################################################################
 
@@ -75,8 +75,8 @@
   pip:
     name: /opt/quarantine/minc-stuffs/src
     executable: /opt/quarantine/miniforge/bin/pip
-  tags:
-    - python
+  when:
+    - '"python" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: Install minc-stuffs (perl)
   shell: . /opt/minc/1.9.17/minc-toolkit-config.sh && ./autogen.sh && ./configure --prefix=/opt/minc/1.9.17 --with-minc2 --with-build-path=/opt/minc/1.9.17 && make && make install
@@ -103,8 +103,8 @@
   args:
     chdir: /opt/quarantine/minc2-simple/src/python
     creates: /opt/quarantine/miniforge/bin/xfmavg_scipy.py
-  tags:
-    - python
+  when:
+    - '"python" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: Install minc2-simple (C)
   shell: . /opt/minc/1.9.17/minc-toolkit-config.sh && cmake -DCMAKE_INSTALL_PREFIX=/opt/minc/1.9.17 ../src && make && make install
@@ -117,12 +117,12 @@
 
 - name: Install pydpiper dependencies (python)
   shell: /opt/quarantine/miniforge/bin/conda install --yes configargparse pyro4 ordered-set networkx pandas
-  tags:
-    - python
+  when:
+    - '"python" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: Install pydpiper (python)
   pip:
     name: https://github.com/Mouse-Imaging-Centre/pydpiper/archive/v2.0.14.tar.gz
     executable: /opt/quarantine/miniforge/bin/pip
-  tags:
-    - python
+  when:
+    - '"python" in ansible_run_tags or "all" in ansible_run_tags'
