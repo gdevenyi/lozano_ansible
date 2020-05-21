@@ -20,3 +20,15 @@
     path: /etc/profile.d/99ANTs.sh
     line: "export PATH=/opt/quarantine/ANTs/bin${PATH:+:$PATH}"
     create: yes
+
+- name: Install antspyx dependencies
+  shell: /opt/quarantine/miniforge/bin/conda install --yes chart-studio webcolors
+  when:
+    - '"python" in ansible_run_tags or "all" in ansible_run_tags'
+
+- name: Install antspyx
+  pip:
+    name: antspyx
+    executable: /opt/quarantine/miniforge/bin/pip
+  when:
+    - '"python" in ansible_run_tags or "all" in ansible_run_tags'

@@ -21,18 +21,6 @@
       serpent biopython seaborn statsmodels pandas
       widgetsnbextension matplotlib xarray zarr dask pathos mrtrix3
 
-- name: Install antspyx dependencies
-  shell: /opt/quarantine/miniforge/bin/conda install --yes chart-studio webcolors
-  tags:
-    - ants
-
-- name: Install antspyx
-  pip:
-    name: antspyx
-    executable: /opt/quarantine/miniforge/bin/pip
-  tags:
-    - ants
-
 - name: Install conda pip packages
   pip:
     name: "{{ packages }}"
@@ -42,7 +30,6 @@
       - qbatch
       - neurosynth
       - neuroquery
-      - antspyx
 
 - name: activate conda for all terminals
   file:
