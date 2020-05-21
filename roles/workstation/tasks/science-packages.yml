@@ -125,21 +125,6 @@
 
 ###############################################################################
 
-- name: Install bpipe
-  unarchive:
-    src: https://github.com/ssadedin/bpipe/releases/download/0.9.9.9/bpipe-0.9.9.9.tar.gz
-    dest: /opt/quarantine
-    creates: /opt/quarantine/bpipe-0.9.9.9
-    remote_src: yes
-
-- name: add bpipe to path
-  lineinfile:
-    path: /etc/profile.d/99bpipe.sh
-    line: "export PATH=/opt/quarantine/bpipe-0.9.9.9/bin${PATH:+:$PATH}"
-    create: yes
-
-###############################################################################
-
 - name: Install connectome-workbench
   unarchive:
     src: https://www.humanconnectome.org/storage/app/media/workbench/workbench-linux64-v1.4.2.zip
