@@ -4,6 +4,7 @@ channels:
   - simpleitk
   - itk
   - conda-forge
+  - bioconda
   - defaults
 channel_priority: strict
 pip_interop_enabled: true
