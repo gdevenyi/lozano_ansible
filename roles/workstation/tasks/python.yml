@@ -44,6 +44,8 @@
     /opt/quarantine/miniforge/bin/conda create -n cbptools --yes
     matplotlib==3.0.3 nibabel numpy pandas pyyaml scikit-learn
     scipy seaborn scikit-image plotly
+  args:
+    creates: /opt/quarantine/miniforge/envs/cbptools
 
 - name: Install cbptools (python)
   pip:
