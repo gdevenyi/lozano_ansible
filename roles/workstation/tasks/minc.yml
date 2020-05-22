@@ -32,8 +32,8 @@
 - name: install minc-toolkit-v2
   apt: deb={{ item }}
   with_items:
-    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.9.17-20190313-Ubuntu_18.04-x86_64.deb
-    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.0.09-20170529-Ubuntu_18.04-x86_64.deb
+    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.9.17-20190313-Ubuntu_19.04-x86_64.deb
+    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.0.09-20170529-Ubuntu_19.04-x86_64.deb
 
 - name: install minc-toolkit-v2 resources
   apt: deb={{ item }}
