@@ -185,3 +185,4 @@
     - https://www.mendeley.com/repositories/ubuntu/stable/amd64/mendeleydesktop-latest
     - https://atom.io/download/deb
     - https://downloads.slack-edge.com/linux_releases/slack-desktop-4.4.2-amd64.deb
+  ignore_errors: yes
