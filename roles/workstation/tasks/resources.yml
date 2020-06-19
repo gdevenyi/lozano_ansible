@@ -4,11 +4,7 @@
     state: directory
 
 - name: Download and install minc MNI atlases
-  unarchive:
-    src: "{{ item }}"
-    dest: /opt/quarantine/resources
-    creates: /opt/quarantine/resources/README
-    remote_src: yes
+  include: resources-atlas-include.yml
   loop:
    - http://packages.bic.mni.mcgill.ca/mni-models/icbm152/mni_icbm152_lin_minc2.zip
    - http://packages.bic.mni.mcgill.ca/mni-models/icbm152/mni_icbm152_nl_VI_minc2.zip
@@ -33,11 +29,7 @@
     - '"minc" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: Download and install nifti MNI atlases
-  unarchive:
-    src: "{{ item }}"
-    dest: /opt/quarantine/resources
-    creates: /opt/quarantine/resources/README
-    remote_src: yes
+  include: resources-atlas-include.yml
   loop:
    - http://packages.bic.mni.mcgill.ca/mni-models/icbm152/mni_icbm152_lin_nifti.zip
    - http://packages.bic.mni.mcgill.ca/mni-models/icbm152/mni_icbm152_nl_VI_nifti.zip
