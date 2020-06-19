@@ -1,3 +1,7 @@
+- name: create resources directory
+  file:
+    path: /opt/quarantine/resources
+    state: directory
 
 - name: Download and install minc MNI atlases
   unarchive:
@@ -60,11 +64,18 @@
   when:
     - '"cobralab" in ansible_run_tags or "all" in ansible_run_tags'
 
+- name: create cobralab brains directory
+  file:
+    path: /opt/quarantine/resources/cobralab-atlases/brains
+    state: directory
+  when:
+    - '"cobralab" in ansible_run_tags or "all" in ansible_run_tags'
+
 - name: Download CoBrALab atlases
   unarchive:
     src: "{{ item }}"
-    dest: /opt/quarantine/resources/cobralab-atlases
-    creates: /opt/quarantine/resources/README
+    dest: /opt/quarantine/resources/cobralab-atlases/brains
+    creates: /opt/quarantine/resources/cobralab-atlases/brains/brains_t1
     remote_src: yes
   loop:
     - http://cobralab.net/files/brains_t1.tar.bz2
