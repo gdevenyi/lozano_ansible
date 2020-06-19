@@ -1,0 +1,12 @@
+- name: Install nvidia bits
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+    state: latest
+    cache_valid_time: 3600
+    autoclean: yes
+    autoremove: yes
+  vars:
+    packages:
+      - nvidia-driver-450
+      - cuda-tools-11-0
