@@ -1,5 +1,5 @@
 - name: enable sudo with no password for sudoers
-  lineinfile: dest=/etc/sudoers state=present regexp='^%sudo ALL\=' line='%sudo ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
+  lineinfile: dest=/etc/sudoers state=present regexp='^localadmin ALL\=' line='localadmin ALL=(ALL) NOPASSWD:ALL' validate='visudo -cf %s'
 
 - include: repos.yml
 - include: packages.yml
