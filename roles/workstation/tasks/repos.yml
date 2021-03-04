@@ -6,7 +6,7 @@
     - https://dl-ssl.google.com/linux/linux_signing_key.pub
     - https://download.docker.com/linux/ubuntu/gpg
     - https://dl.winehq.org/wine-builds/Release.key
-    - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/7fa2af80.pub
+    - https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub
     - https://dl.xanmod.org/gpg.key
     - https://apt.kitware.com/keys/kitware-archive-latest.asc
     - https://updates.signal.org/desktop/apt/keys.asc
@@ -31,7 +31,7 @@
   with_items:
     - ppa:inkscape.dev/stable
     #- ppa:otto-kesselgulasch/gimp
-    #- ppa:ansible/ansible
+    - ppa:ansible/ansible
     - ppa:libreoffice/ppa
     - ppa:x2go/stable
     - ppa:graphics-drivers/ppa

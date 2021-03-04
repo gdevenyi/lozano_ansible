@@ -8,5 +8,5 @@
     autoremove: yes
   vars:
     packages:
-      - nvidia-driver-450
-      - cuda-tools-11-0
+      - nvidia-driver-460
+      - cuda-tools-11-2
