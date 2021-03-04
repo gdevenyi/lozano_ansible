@@ -32,8 +32,8 @@
 - name: install minc-toolkit-v2
   apt: deb={{ item }}
   with_items:
-    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.9.17-20190313-Ubuntu_19.04-x86_64.deb
-    - https://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.0.09-20170529-Ubuntu_19.04-x86_64.deb
+    - http://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.9.18-20200813-Ubuntu_20.04-x86_64.deb
+    - http://packages.bic.mni.mcgill.ca/minc-toolkit/Debian/minc-toolkit-1.0.09-20170529-Ubuntu_20.04-x86_64.deb
 
 - name: install minc-toolkit-v2 resources
   apt: deb={{ item }}
@@ -46,7 +46,7 @@
 - name: enable minc-toolkit
   lineinfile:
     path: /etc/profile.d/98minc-toolkit.sh
-    line: ". /opt/minc/1.9.17/minc-toolkit-config.sh"
+    line: ". /opt/minc/1.9.18/minc-toolkit-config.sh"
     create: yes
 
 ###############################################################################
@@ -79,7 +79,7 @@
     - '"python" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: Install minc-stuffs (perl)
-  shell: . /opt/minc/1.9.17/minc-toolkit-config.sh && ./autogen.sh && ./configure --prefix=/opt/minc/1.9.17 --with-minc2 --with-build-path=/opt/minc/1.9.17 && make && make install
+  shell: . /opt/minc/1.9.18/minc-toolkit-config.sh && ./autogen.sh && ./configure --prefix=/opt/minc/1.9.18 --with-minc2 --with-build-path=/opt/minc/1.9.18 && make -j {{ ansible_processor_vcpus }} && make install
   args:
     chdir: /opt/quarantine/minc-stuffs/src
     creates: /opt/quarantine/minc-stuffs/src/config.log
@@ -99,7 +99,7 @@
     version: v2.2.30
 
 - name: Install minc2-simple (python)
-  shell: /opt/quarantine/miniforge/bin/python setup.py build && /opt/quarantine/miniforge/bin/python setup.py install
+  shell: . /opt/minc/1.9.18/minc-toolkit-config.sh && /opt/quarantine/miniforge/bin/python setup.py build && /opt/quarantine/miniforge/bin/python setup.py install
   args:
     chdir: /opt/quarantine/minc2-simple/src/python
     creates: /opt/quarantine/miniforge/bin/xfmavg_scipy.py
@@ -107,7 +107,7 @@
     - '"python" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: Install minc2-simple (C)
-  shell: . /opt/minc/1.9.17/minc-toolkit-config.sh && cmake -DCMAKE_INSTALL_PREFIX=/opt/minc/1.9.17 ../src && make && make install
+  shell: . /opt/minc/1.9.18/minc-toolkit-config.sh && cmake -DCMAKE_INSTALL_PREFIX=/opt/minc/1.9.18 ../src && make -j {{ ansible_processor_vcpus }} && make install
   args:
     chdir: /opt/quarantine/minc2-simple/build
     creates: /opt/quarantine/minc2-simple/build/CMakeCache.txt
@@ -128,7 +128,7 @@
     - '"python" in ansible_run_tags or "all" in ansible_run_tags'
 
 - name: Install RMINC (R)
-  shell: . /opt/minc/1.9.17/minc-toolkit-config.sh && Rscript --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/RMINC@*release", upgrade=FALSE)'
+  shell: . /opt/minc/1.9.18/minc-toolkit-config.sh && Rscript --vanilla -e 'remotes::install_github("Mouse-Imaging-Centre/RMINC@*release", upgrade=FALSE)'
   args:
     creates: /usr/local/lib/R/site-library/RMINC
   when:
