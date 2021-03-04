@@ -45,7 +45,7 @@
     remote_src: yes
 
 - name: configure and install singularity
-  shell: ./mconfig --prefix=/opt/quarantine/singularity && make -C ./builddir && make -C ./builddir install
+  shell: ./mconfig --prefix=/opt/quarantine/singularity && make -j {{ ansible_processor_vcpus }} -C ./builddir && make -C ./builddir install
   args:
     chdir: /opt/quarantine/singularity/src/singularity
     creates: /opt/quarantine/singularity/bin/singularity
