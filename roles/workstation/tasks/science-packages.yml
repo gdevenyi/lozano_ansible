@@ -12,15 +12,15 @@
 
 - name: Install 3DSlicer
   unarchive:
-    src: https://download.slicer.org/bitstream/1023242
+    src: https://download.slicer.org/bitstream/1442746
     dest: /opt/quarantine
-    creates: /opt/quarantine/Slicer-4.10.2-linux-amd64
+    creates: /opt/quarantine/Slicer-4.11.20210226-linux-amd64
     remote_src: yes
 
 - name: Enable Slicer3D
   lineinfile:
     path: /etc/profile.d/99Slicer3D.sh
-    line: "export PATH=/opt/quarantine/Slicer-4.10.2-linux-amd64${PATH:+:$PATH}"
+    line: "export PATH=/opt/quarantine/Slicer-4.11.20210226-linux-amd64${PATH:+:$PATH}"
     create: yes
 
 ###############################################################################
@@ -42,7 +42,7 @@
 
 - name: Install mricrogl
   unarchive:
-    src: https://github.com/rordenlab/MRIcroGL12/releases/download/v1.2.20200331/MRIcroGL_linux.zip
+    src: https://github.com/rordenlab/MRIcroGL12/releases/download/v1.2.20201102/MRIcroGL_linux.zip
     dest: /opt/quarantine
     creates: /opt/quarantine/MRIcroGL
     remote_src: yes
@@ -62,7 +62,7 @@
 
 - name: Install dcm2niix
   unarchive:
-    src: https://github.com/rordenlab/dcm2niix/releases/download/v1.0.20200331/dcm2niix_lnx.zip
+    src: https://github.com/rordenlab/dcm2niix/releases/download/v1.0.20201102/dcm2niix_lnx.zip
     dest: /opt/quarantine/dcm2niix
     creates: /opt/quarantine/dcm2niix/dcm2niix
     remote_src: yes
@@ -127,7 +127,7 @@
 
 - name: Install connectome-workbench
   unarchive:
-    src: https://www.humanconnectome.org/storage/app/media/workbench/workbench-linux64-v1.4.2.zip
+    src: https://www.humanconnectome.org/storage/app/media/workbench/workbench-linux64-v1.5.0.zip
     dest: /opt/quarantine
     creates: /opt/quarantine/workbench
     remote_src: yes
