@@ -7,7 +7,7 @@
   git:
     repo: https://github.com/ANTsX/ANTs.git
     dest: /opt/quarantine/ANTs/src
-    version: 119534564c62f4f17d70183758b430e878662b22 #2020-05-18
+    version: c73f4dc4664a3711f0aa1ea7c265e41f7939dc5e #2021-03-02
 
 - name: configure and install ANTs
   shell: cmake -DITK_BUILD_MINC_SUPPORT=ON -DBUILD_TESTING=OFF -DRUN_LONG_TESTS=OFF -DRUN_SHORT_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/opt/quarantine/ANTs -DSuperBuild_ANTS_USE_GIT_PROTOCOL=OFF ../src && make -j {{ ansible_processor_vcpus }} && cd ANTS-build && make install
