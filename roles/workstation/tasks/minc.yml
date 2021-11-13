@@ -147,3 +147,12 @@
     creates: /usr/local/lib/R/site-library/mni.cortical.statistics
   when:
     - '"R" in ansible_run_tags or "all" in ansible_run_tags'
+
+###########################################################################
+# Brain-view2
+# coin from https://github.com/coin3d/coin
+# quarter from https://github.com/coin3d/quarter
+# dependencies libpcre++-dev qt5-default libqt5opengl5-dev libtool libboost-dev libcoin-dev qttools5-dev
+# patched qt5 brain-view2
+# bicInventor
+# qmake MINCDIR=/opt/minc/1.9.18 HDF5DIR=/opt/minc/1.9.18 INVENTORDIR=/opt/minc/1.9.18 QUARTERDIR=/opt/quarantine/brain-view2/install
